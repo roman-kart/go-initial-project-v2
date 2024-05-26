@@ -1,3 +1,3 @@
-module gitverse.ru/romankartashev/go-initial-project-v2
+module github.com/roman-kart/go-initial-project
 
 go 1.22
