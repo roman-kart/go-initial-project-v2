@@ -1,1 +1,9 @@
+# Hidden
 .idea
+.golangci.reference.yml
+
+# Directories
+tmp
+
+# Files
+go-initial-project-v2

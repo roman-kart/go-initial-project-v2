@@ -1,0 +1,80 @@
+run:
+  concurrency: 6
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: readonly
+
+output:
+  formats:
+    - format: line-number
+      path: stdout
+  sort-results: true
+  sort-order:
+    - severity
+    - linter
+    - file
+  show-stats: true
+
+issues:
+  include:
+    - EXC0002 # do not skip comment check because project is new
+    - EXC0009 # check files and dirs permissions because project is new
+    - EXC0011 # do not skip comment check because project is new
+    - EXC0012 # do not skip comment check because project is new
+    - EXC0013 # do not skip comment check because project is new
+    - EXC0014 # do not skip comment check because project is new
+    - EXC0015 # do not skip comment check because project is new
+
+linters:
+  fast: false
+  disable:
+    - gomnd
+    - execinquery
+
+linters-settings:
+  depguard:
+    rules:
+      main:
+        list-mode: strict
+        allow:
+          - $gostd
+          - github.com/google/uuid
+          - github.com/stretchr/testify
+          - go.uber.org/zap
+          - github.com/roman-kart/go-initial-project
+
+  gosec:
+    severity: high
+    confidence: high
+    config:
+      global:
+        audit: true
+
+  paralleltest:
+    ignore-missing: true # parallel tests are not good for everything
+
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/roman-kart/)
+      - blank
+      - dot
+      - alias
+      - localmodule
+    skip-generated: false
+    custom-order: true
+
+  wrapcheck:
+    ignoreSigs:
+    - .Errorf(
+    - errors.New(
+    - errors.Unwrap(
+    - errors.Join(
+    - .Wrap(
+    - .Wrapf(
+    - .WithMessage(
+    - .WithMessagef(
+    - .WithStack(
+    - .WrapMethodError(
