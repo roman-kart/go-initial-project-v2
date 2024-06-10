@@ -3,7 +3,7 @@ package test_test
 import (
 	"testing"
 
-	"github.com/roman-kart/go-initial-project/gip"
+	"github.com/roman-kart/go-initial-project/project"
 )
 
 func TestGetLoggerMustNotPanic(t *testing.T) {
@@ -13,6 +13,6 @@ func TestGetLoggerMustNotPanic(t *testing.T) {
 		}
 	}()
 
-	logger := gip.GetLogger()
+	logger := project.GetLogger()
 	logger.Info("This is a test")
 }

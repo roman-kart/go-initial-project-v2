@@ -1,4 +1,4 @@
-package gip
+package project
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/gip/errors"
+	"github.com/roman-kart/go-initial-project/project/errors"
 )
 
 // PanicOnError panics if err is not nil.

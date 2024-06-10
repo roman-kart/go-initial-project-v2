@@ -7,3 +7,5 @@ tmp
 
 # Files
 go-initial-project-v2
+
+project/config/main-local.yaml

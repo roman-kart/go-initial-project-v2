@@ -1,4 +1,4 @@
-package gip
+package project
 
 import "go.uber.org/zap"
 

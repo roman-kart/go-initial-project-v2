@@ -1,0 +1,21 @@
+"clickhouse":
+  "host": "localhost"
+  "port": 39000
+  "user": "default"
+  "password": ""
+  "database": "default"
+  "is_need_to_recreate": false
+  "auto_migrate": false
+  "is_need_to_initialize": false
+"postgresql":
+  "host": "localhost"
+  "port": 5432
+  "user": "postgres"
+  "password": "postgres"
+  "database": "postgres"
+  "is_need_to_recreate": false
+  "auto_migrate": false
+  "is_need_to_initialize": false
+"logger":
+  "level": "info"
+"is_debug": false
