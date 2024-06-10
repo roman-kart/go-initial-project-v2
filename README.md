@@ -27,3 +27,7 @@ https://github.com/mvdan/gofumpt
 ```shell
 ./helper.sh --help
 ```
+
+### Автодополнение
+
+Чтобы включить автодополнение, нужно добавить строчку `source /path/to/autocomplete.sh"` в файл `.bashrc`
