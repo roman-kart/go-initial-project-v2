@@ -1,4 +1,4 @@
-package project
+package utils
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-
-	"github.com/roman-kart/go-initial-project/project/errors"
 )
 
 // PanicOnError panics if err is not nil.
@@ -24,15 +24,18 @@ func PanicOnError(err error) {
 }
 
 // GetRootPath returns the root path of the project.
-func GetRootPath() (string, error) {
+// Panic on error
+func GetRootPath() string {
 	rootPath, err := os.Getwd()
-	if err != nil {
-		return "", errors.WrapMethodError(err, "GetRootPath")
-	}
+	PanicOnError(err)
 
 	rootPathStr := strings.TrimSpace(rootPath)
 
-	return rootPathStr, nil
+	return rootPathStr
+}
+
+func GetPathFromRoot(path string) string {
+	return filepath.Join(GetRootPath(), path)
 }
 
 // ExecuteCommandWithOutput executes the given command and returns the output.
@@ -55,7 +58,7 @@ func ExecuteCommandWithOutput(cmd *exec.Cmd, logger *zap.Logger) (string, error)
 	if err != nil {
 		logger.Error("Error while executing command", zap.Error(err), zap.String("commandOutput", outputStr))
 
-		return "", errors.WrapMethodError(err, "ExecuteCommandWithOutput")
+		return "", WrapMethodError(err, "ExecuteCommandWithOutput")
 	}
 
 	logger.Info("Command executed", zap.String("commandOutput", outputStr))
@@ -112,25 +115,25 @@ func DownloadFileWithContext(ctx context.Context, filepath string, url string, l
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
-		return errors.WrapMethodError(err, "DownloadFileWithContext")
+		return WrapMethodError(err, "DownloadFileWithContext")
 	}
 	defer out.Close()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return errors.WrapMethodError(err, "DownloadFileWithContext")
+		return WrapMethodError(err, "DownloadFileWithContext")
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return errors.WrapMethodError(err, "DownloadFileWithContext")
+		return WrapMethodError(err, "DownloadFileWithContext")
 	}
 	defer resp.Body.Close()
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
-		return errors.WrapMethodError(
-			errors.NewErrHTTPWrongStatus(http.StatusOK, resp.StatusCode),
+		return WrapMethodError(
+			NewErrHTTPWrongStatus(http.StatusOK, resp.StatusCode),
 			"DownloadFileWithContext",
 		)
 	}
@@ -138,7 +141,7 @@ func DownloadFileWithContext(ctx context.Context, filepath string, url string, l
 	// Writer the body to file
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return errors.WrapMethodError(err, "DownloadFileWithContext")
+		return WrapMethodError(err, "DownloadFileWithContext")
 	}
 
 	return nil
@@ -149,4 +152,13 @@ func GenerateUUID() string {
 	u := uuid.New()
 
 	return u.String()
+}
+
+func SortMapKeys[T any](m map[string]T) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

@@ -13,3 +13,10 @@
   "auto_migrate": true
   "is_need_to_initialize": true
 "is_debug": true
+"telegram":
+  "token": "<REPLACE WITH YOURS>"
+  "admins": []
+  "developers": []
+"rabbitmq":
+  "password": "<REPLACE WITH YOURS>"
+  "host": "<REPLACE WITH YOURS>"

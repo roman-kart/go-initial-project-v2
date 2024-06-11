@@ -6,13 +6,13 @@ import (
 	"github.com/roman-kart/go-initial-project/project"
 )
 
-func TestGetLoggerMustNotPanic(t *testing.T) {
+func TestGetZapLoggerMustNotPanic(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			t.Errorf("The code did panic")
 		}
 	}()
 
-	logger := project.GetLogger()
+	logger := project.GetZapLogger()
 	logger.Info("This is a test")
 }

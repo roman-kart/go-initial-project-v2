@@ -39,7 +39,7 @@ func TestGetRootPath(t *testing.T) {
 }
 
 func TestExecuteCommandWithOutput(t *testing.T) {
-	l := project.GetLogger()
+	l := project.GetZapLogger()
 	cmd := exec.Command("echo", "test")
 	out, err := project.ExecuteCommandWithOutput(cmd, l)
 	require.NoError(t, err, "Error should be nil")

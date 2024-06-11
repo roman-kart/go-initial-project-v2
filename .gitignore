@@ -9,3 +9,6 @@ tmp
 go-initial-project-v2
 
 project/config/main-local.yaml
+
+project/config/aws/config
+project/config/aws/credentials

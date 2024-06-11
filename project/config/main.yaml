@@ -19,3 +19,14 @@
 "logger":
   "level": "info"
 "is_debug": false
+"telegram":
+  "token": ""
+  "admins": [ ]
+"rabbitmq":
+  "user": "test_user"
+  "port": 5672
+"s3":
+  "config_paths":
+    - "config/aws/config"
+  "credentials_paths":
+    - "config/aws/credentials"

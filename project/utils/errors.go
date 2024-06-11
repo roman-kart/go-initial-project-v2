@@ -1,9 +1,14 @@
-package errors
+package utils
 
 import (
 	"errors"
 	"fmt"
 )
+
+// WrapMethodError wrap an error with method name.
+func WrapMethodError(err error, method string) error {
+	return fmt.Errorf("%s: %w", method, err)
+}
 
 // ErrHTTPWrongStatus is an error type for wrong HTTP status.
 var ErrHTTPWrongStatus = errors.New("wrong status")
