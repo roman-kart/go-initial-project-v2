@@ -50,7 +50,7 @@ type Config struct {
 	} `yaml:"s3"`
 }
 
-func NewConfig(configFolder string) (Config, error) {
+func NewConfig(configFolder string) (*Config, error) {
 	configPath := configFolder +
 		string(os.PathSeparator) + "main.yaml"
 	localConfigPath := configFolder +
@@ -67,5 +67,5 @@ func NewConfig(configFolder string) (Config, error) {
 		ConfigFolder: configFolder,
 	}
 	err := configor.Load(&config, configPaths...)
-	return config, err
+	return &config, err
 }
