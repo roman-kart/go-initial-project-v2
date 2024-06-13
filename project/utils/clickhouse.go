@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 
 	"gorm.io/gorm/schema"
 
@@ -19,6 +20,7 @@ type ClickHouse struct {
 	Config *cfg.Config
 	logger *zap.Logger
 	Logger *Logger
+	db     *gorm.DB
 }
 
 func NewClickHouse(config *cfg.Config, logger *Logger) *ClickHouse {
@@ -41,13 +43,31 @@ func (c *ClickHouse) GetConnectionString() string {
 func (c *ClickHouse) GetConnection() (*gorm.DB, error) {
 	logger := c.logger.Named("GetConnection")
 
+	if c.db != nil {
+		return c.db, nil
+	}
+
 	dsn := c.GetConnectionString()
 	logger.Info("dsn", zap.String("dsn", dsn))
 	db, err := gorm.Open(clickhouse.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return db, err
+		return nil, err
 	}
-	db = db.Debug()
+
+	if c.Config.IsDebug {
+		db = db.Debug()
+	}
+
+	dbInner, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	dbInner.SetConnMaxLifetime(time.Second * time.Duration(c.Config.Clickhouse.ConnMaxLifetime))
+	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(c.Config.Clickhouse.ConnMaxIdleTime))
+	dbInner.SetMaxIdleConns(c.Config.Clickhouse.MaxIdleConns)
+	dbInner.SetMaxOpenConns(c.Config.Clickhouse.MaxOpenConns)
+
+	c.db = db
 	return db, err
 }
 

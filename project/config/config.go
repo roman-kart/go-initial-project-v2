@@ -17,6 +17,10 @@ type Config struct {
 		IsNeedToRecreate   bool   `yaml:"is_need_to_recreate" default:"false"`
 		AutoMigrate        bool   `yaml:"auto_migrate" default:"false"`
 		IsNeedToInitialize bool   `yaml:"is_need_to_initialize" default:"false"`
+		ConnMaxLifetime    int64  `yaml:"conn_max_lifetime" default:"60"`  // seconds
+		ConnMaxIdleTime    int64  `yaml:"conn_max_idle_time" default:"60"` // seconds
+		MaxIdleConns       int    `yaml:"max_idle_conns" default:"10"`
+		MaxOpenConns       int    `yaml:"max_open_conns" default:"10"`
 	} `yaml:"clickhouse"`
 	Logger struct {
 		Level string `yaml:"level" default:"info"`
@@ -30,6 +34,10 @@ type Config struct {
 		IsNeedToRecreate   bool   `yaml:"is_need_to_recreate" default:"false"`
 		AutoMigrate        bool   `yaml:"auto_migrate" default:"false"`
 		IsNeedToInitialize bool   `yaml:"is_need_to_initialize" default:"false"`
+		ConnMaxLifetime    int64  `yaml:"conn_max_lifetime" default:"60"`  // seconds
+		ConnMaxIdleTime    int64  `yaml:"conn_max_idle_time" default:"60"` // seconds
+		MaxIdleConns       int    `yaml:"max_idle_conns" default:"10"`
+		MaxOpenConns       int    `yaml:"max_open_conns" default:"10"`
 	} `yaml:"postgresql"`
 	IsDebug  bool `yaml:"is_debug" default:"false"`
 	Telegram struct {

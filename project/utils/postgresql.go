@@ -15,6 +15,7 @@ type Postgresql struct {
 	Config *config.Config
 	logger *zap.Logger
 	Logger *Logger
+	db     *gorm.DB
 }
 
 func NewPostgresql(config *config.Config, logger *Logger) *Postgresql {
@@ -38,15 +39,31 @@ func (p *Postgresql) GetConnectionString() string {
 func (p *Postgresql) GetConnection() (*gorm.DB, error) {
 	logger := p.logger.Named("GetConnection")
 
+	if p.db != nil {
+		return p.db, nil
+	}
+
 	dsn := p.GetConnectionString()
 	logger.Info("dsn", zap.String("dsn", dsn))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return db, err
+		return nil, err
 	}
+
 	if p.Config.IsDebug {
 		db = db.Debug()
 	}
+
+	dbInner, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	dbInner.SetConnMaxLifetime(time.Second * time.Duration(p.Config.Postgresql.ConnMaxLifetime))
+	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(p.Config.Postgresql.ConnMaxIdleTime))
+	dbInner.SetMaxIdleConns(p.Config.Postgresql.MaxIdleConns)
+	dbInner.SetMaxOpenConns(p.Config.Postgresql.MaxOpenConns)
+
+	p.db = db
 	return db, err
 }
 
