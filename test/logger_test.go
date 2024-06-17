@@ -3,7 +3,7 @@ package test_test
 import (
 	"testing"
 
-	"github.com/roman-kart/go-initial-project/project"
+	"github.com/roman-kart/go-initial-project/project/utils"
 )
 
 func TestGetZapLoggerMustNotPanic(t *testing.T) {
@@ -13,6 +13,6 @@ func TestGetZapLoggerMustNotPanic(t *testing.T) {
 		}
 	}()
 
-	logger := project.GetZapLogger()
+	logger := utils.GetZapLogger()
 	logger.Info("This is a test")
 }

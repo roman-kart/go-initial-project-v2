@@ -1,4 +1,4 @@
-package utils
+package tools
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func PanicOnError(err error) {
 }
 
 // GetRootPath returns the root path of the project.
-// Panic on error
+// Panic on error.
 func GetRootPath() string {
 	rootPath, err := os.Getwd()
 	PanicOnError(err)
@@ -34,6 +34,7 @@ func GetRootPath() string {
 	return rootPathStr
 }
 
+// GetPathFromRoot returns the path of the given path relative to the project root path.
 func GetPathFromRoot(path string) string {
 	return filepath.Join(GetRootPath(), path)
 }
@@ -57,7 +58,6 @@ func ExecuteCommandWithOutput(cmd *exec.Cmd, logger *zap.Logger) (string, error)
 
 	if err != nil {
 		logger.Error("Error while executing command", zap.Error(err), zap.String("commandOutput", outputStr))
-
 		return "", WrapMethodError(err, "ExecuteCommandWithOutput")
 	}
 
@@ -108,6 +108,7 @@ func DownloadFile(filepath string, url string, logger *zap.Logger) error {
 // Returns:
 //   - error - nil or error if any error occurred
 func DownloadFileWithContext(ctx context.Context, filepath string, url string, logger *zap.Logger) error {
+	ew := GetErrorWrapper("DownloadFileWithContext")
 	logger = logger.Named("DownloadFileWithContext")
 
 	logger.Info("Downloading file", zap.String("url", url), zap.String("filepath", filepath))
@@ -132,16 +133,13 @@ func DownloadFileWithContext(ctx context.Context, filepath string, url string, l
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
-		return WrapMethodError(
-			NewErrHTTPWrongStatus(http.StatusOK, resp.StatusCode),
-			"DownloadFileWithContext",
-		)
+		return ew(err)
 	}
 
 	// Writer the body to file
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return WrapMethodError(err, "DownloadFileWithContext")
+		return ew(err)
 	}
 
 	return nil
@@ -150,15 +148,17 @@ func DownloadFileWithContext(ctx context.Context, filepath string, url string, l
 // GenerateUUID generate a UUID string.
 func GenerateUUID() string {
 	u := uuid.New()
-
 	return u.String()
 }
 
+// SortMapKeys sort map's keys.
 func SortMapKeys[T any](m map[string]T) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
 	}
+
 	sort.Strings(keys)
+
 	return keys
 }

@@ -1,55 +1,67 @@
+// Package config contains things for configuring application
 package config
 
 import (
+	"context"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/jinzhu/configor"
 )
 
+// Config holds the application configuration.
 type Config struct {
 	ConfigFolder string `yaml:"-"`
 	Clickhouse   struct {
-		Host               string `yaml:"host" default:"localhost"`
-		Port               int    `yaml:"port" default:"9000"`
-		User               string `yaml:"user" default:"default"`
-		Password           string `yaml:"password" default:""`
-		Database           string `yaml:"database" default:"default"`
-		IsNeedToRecreate   bool   `yaml:"is_need_to_recreate" default:"false"`
-		AutoMigrate        bool   `yaml:"auto_migrate" default:"false"`
-		IsNeedToInitialize bool   `yaml:"is_need_to_initialize" default:"false"`
-		ConnMaxLifetime    int64  `yaml:"conn_max_lifetime" default:"60"`  // seconds
-		ConnMaxIdleTime    int64  `yaml:"conn_max_idle_time" default:"60"` // seconds
-		MaxIdleConns       int    `yaml:"max_idle_conns" default:"10"`
-		MaxOpenConns       int    `yaml:"max_open_conns" default:"10"`
+		Host               string `default:"localhost" yaml:"host"`
+		Port               int    `default:"9000"      yaml:"port"`
+		User               string `default:"default"   yaml:"user"`
+		Password           string `default:""          yaml:"password"`
+		Database           string `default:"default"   yaml:"database"`
+		IsNeedToRecreate   bool   `default:"false"     yaml:"is_need_to_recreate"`
+		AutoMigrate        bool   `default:"false"     yaml:"auto_migrate"`
+		IsNeedToInitialize bool   `default:"false"     yaml:"is_need_to_initialize"`
+		ConnMaxLifetime    int64  `default:"60"        yaml:"conn_max_lifetime"`  // seconds
+		ConnMaxIdleTime    int64  `default:"60"        yaml:"conn_max_idle_time"` // seconds
+		MaxIdleConns       int    `default:"10"        yaml:"max_idle_conns"`
+		MaxOpenConns       int    `default:"10"        yaml:"max_open_conns"`
 	} `yaml:"clickhouse"`
 	Logger struct {
-		Level string `yaml:"level" default:"info"`
+		Level    string `default:"info" yaml:"level"`
+		Sampling struct {
+			Initial    int `default:"100" yaml:"initial"`
+			Thereafter int `default:"200" yaml:"thereafter"`
+		}
 	}
 	Postgresql struct {
-		Host               string `yaml:"host" default:"localhost"`
-		Port               int    `yaml:"port" default:"5432"`
-		User               string `yaml:"user" default:"postgres"`
-		Password           string `yaml:"password" default:"postgres"`
-		Database           string `yaml:"database" default:"lucky-gamer"`
-		IsNeedToRecreate   bool   `yaml:"is_need_to_recreate" default:"false"`
-		AutoMigrate        bool   `yaml:"auto_migrate" default:"false"`
-		IsNeedToInitialize bool   `yaml:"is_need_to_initialize" default:"false"`
-		ConnMaxLifetime    int64  `yaml:"conn_max_lifetime" default:"60"`  // seconds
-		ConnMaxIdleTime    int64  `yaml:"conn_max_idle_time" default:"60"` // seconds
-		MaxIdleConns       int    `yaml:"max_idle_conns" default:"10"`
-		MaxOpenConns       int    `yaml:"max_open_conns" default:"10"`
+		Host               string `default:"localhost"   yaml:"host"`
+		Port               int    `default:"5432"        yaml:"port"`
+		User               string `default:"postgres"    yaml:"user"`
+		Password           string `default:"postgres"    yaml:"password"`
+		Database           string `default:"lucky-gamer" yaml:"database"`
+		IsNeedToRecreate   bool   `default:"false"       yaml:"is_need_to_recreate"`
+		AutoMigrate        bool   `default:"false"       yaml:"auto_migrate"`
+		IsNeedToInitialize bool   `default:"false"       yaml:"is_need_to_initialize"`
+		ConnMaxLifetime    int64  `default:"60"          yaml:"conn_max_lifetime"`  // seconds
+		ConnMaxIdleTime    int64  `default:"60"          yaml:"conn_max_idle_time"` // seconds
+		MaxIdleConns       int    `default:"10"          yaml:"max_idle_conns"`
+		MaxOpenConns       int    `default:"10"          yaml:"max_open_conns"`
 	} `yaml:"postgresql"`
-	IsDebug  bool `yaml:"is_debug" default:"false"`
+	IsDebug  bool `default:"false"   yaml:"is_debug"`
 	Telegram struct {
-		Token  string  `yaml:"token"`
-		ChatId int64   `yaml:"chat_id"`
-		Admins []int64 `yaml:"admins"`
+		Token      string  `yaml:"token"`
+		ChatID     int64   `yaml:"chat_id"`
+		Admins     []int64 `yaml:"admins"`
+		LongPoller struct {
+			Timeout uint `default:"10" yaml:"timeout"`
+		} `yaml:"long_poller"`
 	} `yaml:"telegram"`
 	RabbitMQ struct {
-		Host     string `yaml:"host" default:"localhost"`
-		Port     int    `yaml:"port" default:"5672"`
-		User     string `yaml:"user" default:"guest"`
-		Password string `yaml:"password" default:"guest"`
+		Host     string `default:"localhost" yaml:"host"`
+		Port     int    `default:"5672"      yaml:"port"`
+		User     string `default:"guest"     yaml:"user"`
+		Password string `default:"guest"     yaml:"password"`
 	} `yaml:"rabbitmq"`
 	S3 struct {
 		// paths from root
@@ -58,12 +70,16 @@ type Config struct {
 	} `yaml:"s3"`
 }
 
+// NewConfig creates a new config.
+// Using for configuring with wire.
 func NewConfig(configFolder string) (*Config, error) {
 	configPath := configFolder +
 		string(os.PathSeparator) + "main.yaml"
 	localConfigPath := configFolder +
 		string(os.PathSeparator) + "main-local.yaml"
+
 	var configPaths []string
+
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		// only main config
 		configPaths = append(configPaths, configPath)
@@ -71,9 +87,56 @@ func NewConfig(configFolder string) (*Config, error) {
 		// main and local
 		configPaths = append(configPaths, localConfigPath, configPath)
 	}
+
 	config := Config{
 		ConfigFolder: configFolder,
 	}
+
 	err := configor.Load(&config, configPaths...)
+
+	if err == nil {
+		fmt.Printf("config loaded: %+v\n", config)
+
+		alertsForProperties := map[string]bool{
+			"Enable recreation of clickhouse - TABLES WILL BE DELETED THAT CREATED":   config.Clickhouse.IsNeedToRecreate,
+			"Enable auto migrate of clickhouse - TABLE WILL BE ALTERED AUTOMATICALLY": config.Clickhouse.AutoMigrate,
+			"Enable recreation of postgresql - TABLES WILL BE DELETED THAT CREATED":   config.Postgresql.IsNeedToRecreate,
+			"Enable auto migrate of postgresql - TABLE WILL BE ALTERED AUTOMATICALLY": config.Postgresql.AutoMigrate,
+		}
+
+		for message, needToDisplay := range alertsForProperties {
+			if needToDisplay {
+				redOutput(message)
+			}
+		}
+
+		countdown(context.Background(), "CHECK CONFIG", time.Second, 10) //nolint:mnd
+	} else {
+		err = fmt.Errorf("NewConfig: %w", err)
+	}
+
 	return &config, err
+}
+
+func countdown(ctx context.Context, message string, delay time.Duration, count uint) {
+	fmt.Println(message)
+	fmt.Printf("Countdown: %d\n", count)
+
+	ticker := time.NewTicker(delay)
+	defer ticker.Stop()
+
+	for i := count; i > 0; i-- {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			fmt.Printf("%d ", i)
+		}
+	}
+
+	fmt.Println("0")
+}
+
+func redOutput(message string) {
+	fmt.Println("\033[31m" + message + "\033[0m")
 }

@@ -20,6 +20,7 @@ shift
 IS_VERBOSE="FALSE"
 PORT="8080"
 IS_HELP="FALSE"
+FIX="FALSE"
 
 # Parse the remaining arguments
 while (( "$#" )); do
@@ -34,6 +35,10 @@ while (( "$#" )); do
       ;;
     --help|-h)
       IS_HELP="TRUE"
+      shift  1
+      ;;
+    --fix)
+      FIX="TRUE"
       shift  1
       ;;
     *)
@@ -58,6 +63,11 @@ EOF
           if [ "$IS_VERBOSE" != "FALSE" ]
           then
             arguments="$arguments --verbose"
+          fi
+
+          if [ "$FIX" != "FALSE" ]
+          then
+            arguments="$arguments --fix"
           fi
 
           testingOutput=$(golangci-lint.exe run --enable-all $arguments)

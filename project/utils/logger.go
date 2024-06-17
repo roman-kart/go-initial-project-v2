@@ -1,14 +1,18 @@
 package utils
 
 import (
-	cfg "github.com/roman-kart/go-initial-project/project/config"
+	"fmt"
+
 	"go.uber.org/zap"
+
+	cfg "github.com/roman-kart/go-initial-project/project/config"
+	"github.com/roman-kart/go-initial-project/project/tools"
 )
 
 // GetZapLogger returns a [zap.Logger].
 func GetZapLogger() *zap.Logger {
 	l, err := zap.NewDevelopment()
-	PanicOnError(err)
+	tools.PanicOnError(err)
 
 	return l
 }
@@ -22,22 +26,37 @@ type Logger struct {
 // NewLogger returns a new Logger component.
 func NewLogger(config *cfg.Config) (*Logger, func(), error) {
 	logLevel := zap.InfoLevel
+
 	switch config.Logger.Level {
 	case "debug":
 		logLevel = zap.DebugLevel
+	case "info":
+		logLevel = zap.InfoLevel
+	case "warn":
+		logLevel = zap.WarnLevel
+	case "error":
+		logLevel = zap.ErrorLevel
+	case "panic":
+		logLevel = zap.PanicLevel
 	}
+
+	ew := tools.GetErrorWrapper("NewUserManager")
 
 	logger, err := zap.Config{
 		Level:       zap.NewAtomicLevelAt(logLevel),
 		Development: false,
 		Sampling: &zap.SamplingConfig{
-			Initial:    100,
-			Thereafter: 100,
+			Initial:    config.Logger.Sampling.Initial,
+			Thereafter: config.Logger.Sampling.Thereafter,
 		},
 		Encoding:         "json",
 		EncoderConfig:    zap.NewProductionEncoderConfig(),
-		OutputPaths:      []string{"stderr"},
+		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
 	}.Build()
-	return &Logger{Config: config, Logger: logger}, func() { logger.Sync() }, err
+
+	//nolint:forbidigo
+	return &Logger{Config: config, Logger: logger},
+		func() { err := logger.Sync(); fmt.Println("Logger sync error:", err) },
+		ew(err)
 }

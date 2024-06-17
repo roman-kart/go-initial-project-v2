@@ -1,2 +1,2 @@
-// Package utils contains components for working with low-level (db, file management, etc.)
+// Package utils contains components for working with low-level utilities (db, file management, etc.)
 package utils

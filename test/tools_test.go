@@ -8,7 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/roman-kart/go-initial-project/project"
+	"github.com/roman-kart/go-initial-project/project/tools"
+	"github.com/roman-kart/go-initial-project/project/utils"
 )
 
 var errTest = errors.New("test error")
@@ -19,7 +20,7 @@ func TestPanicOnErrorMustPanic(t *testing.T) {
 			t.Errorf("The code did not panic")
 		}
 	}()
-	project.PanicOnError(errTest)
+	tools.PanicOnError(errTest)
 }
 
 func TestPanicOnErrorMustNotPanic(t *testing.T) {
@@ -28,20 +29,19 @@ func TestPanicOnErrorMustNotPanic(t *testing.T) {
 			t.Errorf("The code did panic")
 		}
 	}()
-	project.PanicOnError(nil)
+	tools.PanicOnError(nil)
 }
 
 func TestGetRootPath(t *testing.T) {
-	p, err := project.GetRootPath()
-	require.NoError(t, err, "Error should be nil")
+	p := tools.GetRootPath()
 	assert.DirExistsf(t, p, "The path does not exist")
 	t.Logf("Path: %s", p)
 }
 
 func TestExecuteCommandWithOutput(t *testing.T) {
-	l := project.GetZapLogger()
+	l := utils.GetZapLogger()
 	cmd := exec.Command("echo", "test")
-	out, err := project.ExecuteCommandWithOutput(cmd, l)
+	out, err := tools.ExecuteCommandWithOutput(cmd, l)
 	require.NoError(t, err, "Error should be nil")
 	assert.Equal(t, "test\n", out, "Output should be 'test'")
 }

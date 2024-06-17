@@ -14,7 +14,7 @@ _autocomplete() {
       words="$helpArgs godoc lint"
       ;;
     lint)
-      words="$helpArgs --verbose"
+      words="$helpArgs --verbose --fix"
       ;;
     godoc)
       words="$helpArgs --port"

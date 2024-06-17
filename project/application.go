@@ -1,12 +1,14 @@
 package project
 
 import (
+	"go.uber.org/zap"
+
 	"github.com/roman-kart/go-initial-project/project/config"
 	"github.com/roman-kart/go-initial-project/project/managers"
 	"github.com/roman-kart/go-initial-project/project/utils"
-	"go.uber.org/zap"
 )
 
+// Application contains all components of go-initial-project components.
 type Application struct {
 	Config *config.Config
 
@@ -23,6 +25,8 @@ type Application struct {
 	UserAccountManager *managers.UserAccountManager
 }
 
+// NewApplication creates a new instance of Application.
+// Using for configuring with wire.
 func NewApplication(
 	cfg *config.Config,
 

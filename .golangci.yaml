@@ -25,12 +25,23 @@ issues:
     - EXC0013 # do not skip comment check because project is new
     - EXC0014 # do not skip comment check because project is new
     - EXC0015 # do not skip comment check because project is new
+  exclude-rules:
+    - path: project/config/config.go
+      linters:
+        - forbidigo
 
 linters:
   fast: false
   disable:
     - gomnd
     - execinquery
+    - exportloopref # IMPORTANT: ONLY FROM GO 1.22. BEFORE 1.22 BUG EXISTS - https://go.dev/blog/loopvar-preview
+    # I don't think it's necessary to use it,
+    # because there are too many false positives,
+    # because for some fields we can leave null values,
+    # either pass an empty configuration object,
+    # or eventually initialize some of the fields after
+    - exhaustruct
 
 linters-settings:
   depguard:
@@ -43,6 +54,19 @@ linters-settings:
           - github.com/stretchr/testify
           - go.uber.org/zap
           - github.com/roman-kart/go-initial-project
+          - github.com/jinzhu/configor
+          - gorm.io/driver/clickhouse
+          - gorm.io/driver/postgres
+          - gorm.io/gorm
+          - github.com/aws/aws-sdk-go-v2
+          - gopkg.in/telebot.v3
+          - github.com/rabbitmq/amqp091-go
+  tagliatelle:
+    case:
+      rules:
+        yaml: snake
+  varnamelen:
+    min-name-length: 1
 
   gosec:
     severity: high
@@ -53,6 +77,8 @@ linters-settings:
 
   paralleltest:
     ignore-missing: true # parallel tests are not good for everything
+  nlreturn:
+    block-size: 2
 
   gci:
     sections:
