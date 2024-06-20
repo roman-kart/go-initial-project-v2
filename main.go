@@ -3,8 +3,10 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/roman-kart/go-initial-project/project"
+	"github.com/roman-kart/go-initial-project/project/managers"
 	"github.com/roman-kart/go-initial-project/project/tools"
 )
 
@@ -22,4 +24,32 @@ func test() {
 	tools.PanicOnError(err)
 
 	app.Logger.Logger.Info("Starting application")
+
+	helpAdditionalMessage := "Чтобы получить справку по конкретной команде: `/help <команда без слэша>`"
+	app.TelegramBotManager.AddCommonCommandsHandlers(&managers.CommonBotCommandsConfig{
+		Start: managers.StartCommandConfig{
+			Enabled: true,
+			Message: "Привет!",
+		},
+		Help: managers.HelpCommandConfig{
+			Enabled: true,
+			MainHelpMessage: "Тестовый бот\n" +
+				"\n" +
+				helpAdditionalMessage,
+			CommandsHelpMessages: map[string]managers.HelpCommandMessages{
+				"/start": {
+					ShortMessage:  "Начать работу с ботом",
+					DetailMessage: "Напишите /start",
+				},
+				"/help": {
+					ShortMessage: "Получить справку по боту",
+					DetailMessage: "Напишите /help, чтобы посмотреть все команды.\n" +
+						"\n" +
+						helpAdditionalMessage,
+				},
+			},
+		},
+	})
+
+	time.Sleep(1 * time.Minute)
 }
