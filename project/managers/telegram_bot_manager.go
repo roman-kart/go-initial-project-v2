@@ -80,6 +80,13 @@ func (t *TelegramBotManager) GetBot() *telebot.Bot {
 	return t.telegramBot
 }
 
+// GetDefaultSendOptions returns default send options.
+func (t *TelegramBotManager) GetDefaultSendOptions() *telebot.SendOptions {
+	return &telebot.SendOptions{
+		ParseMode: telebot.ModeMarkdown,
+	}
+}
+
 // StartCommandConfig contains configurations for start command.
 type StartCommandConfig struct {
 	Enabled bool
@@ -105,9 +112,6 @@ type CommonBotCommandsConfig struct {
 	Help  HelpCommandConfig
 }
 
-// ErrNoMessage error if no message provided for command.
-var ErrNoMessage = errors.New("no message for start command")
-
 // AddCommonCommandsHandlers adds handlers for common bot commands.
 //
 //nolint:funlen
@@ -116,11 +120,12 @@ func (t *TelegramBotManager) AddCommonCommandsHandlers(cfg *CommonBotCommandsCon
 		ew := t.ErrorWrapperCreator.GetMethodWrapper("start_handler")
 
 		t.GetBot().Handle("/start", func(c telebot.Context) error {
-			if cfg.Start.Message != "" {
-				return ew(c.Send(cfg.Start.Message, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown}))
+			message, err := TelegramStartCommandResponse(&cfg.Start)
+			if err != nil {
+				return ew(err)
 			}
 
-			return ew(ErrNoMessage)
+			return ew(c.Send(message, t.GetDefaultSendOptions()))
 		})
 	}
 
@@ -128,49 +133,61 @@ func (t *TelegramBotManager) AddCommonCommandsHandlers(cfg *CommonBotCommandsCon
 		ew := t.ErrorWrapperCreator.GetMethodWrapper("help_handler")
 
 		t.GetBot().Handle("/help", func(c telebot.Context) error {
-			if cfg.Help.MainHelpMessage == "" {
-				return ew(ErrNoMessage)
-			}
-
 			args := c.Args()
-			if len(args) == 0 {
-				commandsListMessagePart := ""
 
-				for commandName, commandConfig := range cfg.Help.CommandsHelpMessages {
-					commandsListMessagePart += fmt.Sprintf("%s - %s\n", commandName, commandConfig.ShortMessage)
-				}
-
-				finalMessage := fmt.Sprintf("%s\n\n*Команды:*\n%s", cfg.Help.MainHelpMessage, commandsListMessagePart)
-
-				return ew(c.Send(finalMessage, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown}))
+			message, err := TelegramHelpCommandResponse(&cfg.Help, args)
+			if err != nil {
+				return ew(err)
 			}
 
-			commandName := args[0]
-			commandName = strings.TrimSpace(commandName)
-
-			// remove leading slash if it exists for make sure only one slash will exists
-			commandName = "/" + strings.TrimLeft(commandName, "/")
-
-			commandConfig, ok := cfg.Help.CommandsHelpMessages[commandName]
-			if !ok {
-				return ew(
-					c.Send(
-						fmt.Sprintf("Команда `%s` не найдена", commandName),
-						&telebot.SendOptions{
-							ParseMode: telebot.ModeMarkdown,
-						},
-					),
-				)
-			}
-
-			return ew(
-				c.Send(
-					fmt.Sprintf("%s\n\n%s", commandConfig.ShortMessage, commandConfig.DetailMessage),
-					&telebot.SendOptions{
-						ParseMode: telebot.ModeMarkdown,
-					},
-				),
-			)
+			return ew(c.Send(message, t.GetDefaultSendOptions()))
 		})
 	}
+}
+
+// ErrNoMessage error if no message provided for command.
+var ErrNoMessage = errors.New("no message")
+
+// TelegramStartCommandResponse returns help message for command.
+func TelegramStartCommandResponse(cfg *StartCommandConfig) (string, error) {
+	ew := tools.GetErrorWrapper("TelegramStartCommandResponse")
+
+	if cfg.Message == "" {
+		return "", ew(ErrNoMessage)
+	}
+	return cfg.Message, nil
+}
+
+func TelegramHelpCommandResponse(cfg *HelpCommandConfig, args []string) (string, error) {
+	ew := tools.GetErrorWrapper("TelegramHelpCommandResponse")
+
+	if cfg.MainHelpMessage == "" {
+		return "", ew(ErrNoMessage)
+	}
+
+	if len(args) == 0 {
+		commandsListMessagePart := ""
+
+		for commandName, commandConfig := range cfg.CommandsHelpMessages {
+			commandsListMessagePart += fmt.Sprintf("%s - %s\n", commandName, commandConfig.ShortMessage)
+		}
+
+		finalMessage := fmt.Sprintf("%s\n\n*Команды:*\n%s", cfg.MainHelpMessage, commandsListMessagePart)
+
+		return finalMessage, nil
+	}
+
+	commandName := args[0]
+	commandName = strings.TrimSpace(commandName)
+
+	// remove leading slash if it exists for make sure only one slash will exists
+	commandName = "/" + strings.TrimLeft(commandName, "/")
+
+	commandConfig, ok := cfg.CommandsHelpMessages[commandName]
+
+	if !ok {
+		return fmt.Sprintf("Команда `%s` не найдена", commandName), nil
+	}
+
+	return fmt.Sprintf("%s\n\n%s", commandConfig.ShortMessage, commandConfig.DetailMessage), nil
 }
