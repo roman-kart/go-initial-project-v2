@@ -1,4 +1,4 @@
-package test_test
+package tests_test
 
 import (
 	"errors"
@@ -34,7 +34,7 @@ func TestPanicOnErrorMustNotPanic(t *testing.T) {
 
 func TestGetRootPath(t *testing.T) {
 	p := tools.GetRootPath()
-	assert.DirExistsf(t, p, "The path does not exist")
+	require.DirExistsf(t, p, "The path does not exist")
 	t.Logf("Path: %s", p)
 }
 

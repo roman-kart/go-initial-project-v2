@@ -101,8 +101,9 @@ type HelpCommandMessages struct {
 
 // HelpCommandConfig contains configuration of one command's help message.
 type HelpCommandConfig struct {
-	Enabled              bool
-	MainHelpMessage      string
+	Enabled         bool
+	MainHelpMessage string
+	// CommandsHelpMessages key is a handler endpoint with leading slash.
 	CommandsHelpMessages map[string]HelpCommandMessages
 }
 
@@ -113,8 +114,6 @@ type CommonBotCommandsConfig struct {
 }
 
 // AddCommonCommandsHandlers adds handlers for common bot commands.
-//
-//nolint:funlen
 func (t *TelegramBotManager) AddCommonCommandsHandlers(cfg *CommonBotCommandsConfig) {
 	if cfg.Start.Enabled {
 		ew := t.ErrorWrapperCreator.GetMethodWrapper("start_handler")
@@ -148,16 +147,19 @@ func (t *TelegramBotManager) AddCommonCommandsHandlers(cfg *CommonBotCommandsCon
 // ErrNoMessage error if no message provided for command.
 var ErrNoMessage = errors.New("no message")
 
-// TelegramStartCommandResponse returns help message for command.
+// TelegramStartCommandResponse greeting user when user press Start button.
 func TelegramStartCommandResponse(cfg *StartCommandConfig) (string, error) {
 	ew := tools.GetErrorWrapper("TelegramStartCommandResponse")
 
 	if cfg.Message == "" {
 		return "", ew(ErrNoMessage)
 	}
+
 	return cfg.Message, nil
 }
 
+// TelegramHelpCommandResponse returns help message for all commands or concrete command.
+// Commands will be sorted by command name.
 func TelegramHelpCommandResponse(cfg *HelpCommandConfig, args []string) (string, error) {
 	ew := tools.GetErrorWrapper("TelegramHelpCommandResponse")
 
@@ -168,8 +170,16 @@ func TelegramHelpCommandResponse(cfg *HelpCommandConfig, args []string) (string,
 	if len(args) == 0 {
 		commandsListMessagePart := ""
 
-		for commandName, commandConfig := range cfg.CommandsHelpMessages {
+		commandKeysSorted := tools.SortMapKeys(cfg.CommandsHelpMessages)
+		for _, commandName := range commandKeysSorted {
+			commandConfig := cfg.CommandsHelpMessages[commandName]
 			commandsListMessagePart += fmt.Sprintf("%s - %s\n", commandName, commandConfig.ShortMessage)
+		}
+
+		commandsListMessagePart = strings.TrimRight(commandsListMessagePart, "\n") // remove last \n
+
+		if commandsListMessagePart == "" {
+			return cfg.MainHelpMessage, nil
 		}
 
 		finalMessage := fmt.Sprintf("%s\n\n*Команды:*\n%s", cfg.MainHelpMessage, commandsListMessagePart)

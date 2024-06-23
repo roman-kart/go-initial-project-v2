@@ -37,15 +37,15 @@ func test() {
 				"\n" +
 				helpAdditionalMessage,
 			CommandsHelpMessages: map[string]managers.HelpCommandMessages{
-				"/start": {
-					ShortMessage:  "Начать работу с ботом",
-					DetailMessage: "Напишите /start",
-				},
 				"/help": {
 					ShortMessage: "Получить справку по боту",
 					DetailMessage: "Напишите /help, чтобы посмотреть все команды.\n" +
 						"\n" +
 						helpAdditionalMessage,
+				},
+				"/start": {
+					ShortMessage:  "Начать работу с ботом",
+					DetailMessage: "Напишите /start",
 				},
 			},
 		},

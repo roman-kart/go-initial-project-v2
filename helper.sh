@@ -119,7 +119,27 @@ Documentation for command: ./helper.sh <command> (--help|-h)
 Commands:
   lint   - Perform linting with golangci-lint
   godoc  - Start godoc server
+  gotest   - Run all GO-tests
 EOF
+    ;;
+  gotest)
+    if [ "$IS_HELP" != "FALSE" ]; then
+          cat << EOF
+Usage: ./helper.sh test
+
+Arguments:
+  --verbose  - Enable verbose output (default FALSE)
+EOF
+    else
+      args=""
+
+      if  [ "$IS_VERBOSE" != "FALSE" ]; then
+        args="$args -v"
+      fi
+
+      # shellcheck disable=SC2086
+      go test $args ./project/tests/
+    fi
     ;;
   *)
     echo "Error: Invalid action"

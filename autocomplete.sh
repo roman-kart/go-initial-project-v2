@@ -11,13 +11,16 @@ _autocomplete() {
   words=""
   case "${prev}" in
     ./helper.sh)
-      words="$helpArgs godoc lint"
+      words="$helpArgs godoc lint gotest"
       ;;
     lint)
       words="$helpArgs --verbose --fix"
       ;;
     godoc)
       words="$helpArgs --port"
+      ;;
+    gotest)
+      words="$helpArgs --verbose"
       ;;
     *)
       ;;
