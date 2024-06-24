@@ -28,7 +28,7 @@ func NewUserManager(
 	uam := &UserAccountManager{
 		Config:              config,
 		Logger:              logger,
-		logger:              logger.Logger,
+		logger:              logger.Logger.Named("UserManager"),
 		Postgresql:          postgresql,
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("UserAccountManager"),
 	}

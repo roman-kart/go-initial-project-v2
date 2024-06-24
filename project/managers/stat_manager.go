@@ -30,7 +30,7 @@ func NewStatManager(
 	sm := &StatManager{
 		Config:              config,
 		Logger:              logger,
-		logger:              logger.Logger,
+		logger:              logger.Logger.Named("StatManager"),
 		ClickHouse:          clickHouse,
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("StatManager"),
 	}
