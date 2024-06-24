@@ -46,7 +46,7 @@ func InitializeApplication(configFolder string) (*Application, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	userAccountManager, err := managers.NewUserManager(logger, postgresql, configConfig, errorWrapperCreator)
+	userAccountManager, err := managers.NewUserAccountManager(logger, postgresql, configConfig, errorWrapperCreator)
 	if err != nil {
 		cleanup3()
 		cleanup2()

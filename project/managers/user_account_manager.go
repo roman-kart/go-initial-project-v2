@@ -17,9 +17,9 @@ type UserAccountManager struct {
 	ErrorWrapperCreator tools.ErrorWrapperCreator
 }
 
-// NewUserManager creates a new user account manager.
+// NewUserAccountManager creates a new user account manager.
 // Using for configuring with wire.
-func NewUserManager(
+func NewUserAccountManager(
 	logger *utils.Logger,
 	postgresql *utils.Postgresql,
 	config *config.Config,
@@ -33,7 +33,7 @@ func NewUserManager(
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("UserAccountManager"),
 	}
 
-	ew := tools.GetErrorWrapper("NewUserManager")
+	ew := tools.GetErrorWrapper("NewUserAccountManager")
 
 	err := uam.migrate()
 	if err != nil {
