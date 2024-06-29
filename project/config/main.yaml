@@ -35,6 +35,6 @@
   "port": 5672
 "s3":
   "config_paths":
-    - "config/aws/config"
+    - "aws/config"
   "credentials_paths":
-    - "config/aws/credentials"
+    - "aws/credentials"

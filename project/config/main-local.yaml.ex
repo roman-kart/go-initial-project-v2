@@ -20,3 +20,5 @@
 "rabbitmq":
   "password": "<REPLACE WITH YOURS>"
   "host": "<REPLACE WITH YOURS>"
+"s3_manager":
+  "bucket": "<REPLACE WITH YOURS>"

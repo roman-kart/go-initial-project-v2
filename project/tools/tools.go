@@ -162,3 +162,18 @@ func SortMapKeys[T any](m map[string]T) []string {
 
 	return keys
 }
+
+// FirstNonEmpty returns the first non-empty value.
+// If no non-empty value is found, returns the default value.
+// nolint: ireturn
+func FirstNonEmpty[T comparable](values ...T) T {
+	var emptyValue T
+
+	for _, value := range values {
+		if value != emptyValue {
+			return value
+		}
+	}
+
+	return emptyValue
+}

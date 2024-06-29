@@ -7,6 +7,7 @@ import (
 
 	"go.uber.org/zap"
 	"gopkg.in/telebot.v3"
+	"gopkg.in/telebot.v3/middleware"
 
 	"github.com/roman-kart/go-initial-project/project/config"
 	"github.com/roman-kart/go-initial-project/project/tools"
@@ -200,4 +201,9 @@ func TelegramHelpCommandResponse(cfg *HelpCommandConfig, args []string) (string,
 	}
 
 	return fmt.Sprintf("%s\n\n%s", commandConfig.ShortMessage, commandConfig.DetailMessage), nil
+}
+
+// GetAdminOnlyMiddleware returns middleware that checks if user is in admins.
+func (t *TelegramBotManager) GetAdminOnlyMiddleware() telebot.MiddlewareFunc {
+	return middleware.Whitelist(t.Config.Telegram.Admins...)
 }

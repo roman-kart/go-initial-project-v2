@@ -26,6 +26,7 @@ func InitializeApplication(configFolder string) (*Application, func(), error) {
 		managers.NewStatManager,
 		managers.NewTelegramBotManager,
 		managers.NewUserAccountManager,
+		managers.NewS3Manager,
 
 		NewApplication,
 	)

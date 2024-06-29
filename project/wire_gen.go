@@ -60,7 +60,15 @@ func InitializeApplication(configFolder string) (*Application, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	application := NewApplication(configConfig, clickHouse, logger, postgresql, rabbitMQ, s3, telegramBot, statManager, telegramBotManager, userAccountManager)
+	s3Manager, err := managers.NewS3Manager(configConfig, logger, errorWrapperCreator, s3)
+	if err != nil {
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	application := NewApplication(configConfig, clickHouse, logger, postgresql, rabbitMQ, s3, telegramBot, statManager, telegramBotManager, userAccountManager, s3Manager)
 	return application, func() {
 		cleanup4()
 		cleanup3()

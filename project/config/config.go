@@ -10,6 +10,9 @@ import (
 	"github.com/jinzhu/configor"
 )
 
+// CountdownSecondsCount is the number of seconds to countdown before config was loaded.
+var CountdownSecondsCount uint //nolint:gochecknoglobals
+
 // Config holds the application configuration.
 type Config struct {
 	ConfigFolder string `yaml:"-"`
@@ -51,7 +54,6 @@ type Config struct {
 	IsDebug  bool `default:"false"   yaml:"is_debug"`
 	Telegram struct {
 		Token      string  `yaml:"token"`
-		ChatID     int64   `yaml:"chat_id"`
 		Admins     []int64 `yaml:"admins"`
 		LongPoller struct {
 			Timeout uint `default:"10" yaml:"timeout"`
@@ -68,6 +70,11 @@ type Config struct {
 		ConfigPaths      []string `yaml:"config_paths"`
 		CredentialsPaths []string `yaml:"credentials_paths"`
 	} `yaml:"s3"`
+	S3Manager struct {
+		Timeout uint   `default:"10"   yaml:"timeout"`
+		Bucket  string `yaml:"bucket"`
+		MaxKeys int32  `default:"1000" yaml:"max_keys"`
+	} `yaml:"s3_manager"`
 }
 
 // NewConfig creates a new config.
@@ -110,7 +117,13 @@ func NewConfig(configFolder string) (*Config, error) {
 			}
 		}
 
-		countdown(context.Background(), "CHECK CONFIG", time.Second, 10) //nolint:mnd
+		countdownSecondsCount := uint(10) //nolint:mnd
+
+		if CountdownSecondsCount > 0 {
+			countdownSecondsCount = CountdownSecondsCount
+		}
+
+		countdown(context.Background(), "CHECK CONFIG", time.Second, countdownSecondsCount)
 	} else {
 		err = fmt.Errorf("NewConfig: %w", err)
 	}

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -40,12 +41,12 @@ func (s *S3) GetClient() (*s3.Client, error) {
 
 	configPaths := []string{}
 	for _, path := range s.Config.S3.ConfigPaths {
-		configPaths = append(configPaths, tools.GetPathFromRoot(path))
+		configPaths = append(configPaths, s.Config.ConfigFolder+string(os.PathSeparator)+path)
 	}
 
 	credentialsPaths := []string{}
 	for _, path := range s.Config.S3.CredentialsPaths {
-		credentialsPaths = append(credentialsPaths, tools.GetPathFromRoot(path))
+		credentialsPaths = append(credentialsPaths, s.Config.ConfigFolder+string(os.PathSeparator)+path)
 	}
 
 	cfg, err := config.LoadDefaultConfig(

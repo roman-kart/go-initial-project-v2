@@ -23,6 +23,7 @@ type Application struct {
 	StatManager        *managers.StatManager
 	TelegramBotManager *managers.TelegramBotManager
 	UserAccountManager *managers.UserAccountManager
+	S3Manager          *managers.S3Manager
 }
 
 // NewApplication creates a new instance of Application.
@@ -40,6 +41,7 @@ func NewApplication(
 	statManager *managers.StatManager,
 	telegramBotManager *managers.TelegramBotManager,
 	userAccountManager *managers.UserAccountManager,
+	s3Manager *managers.S3Manager,
 ) *Application {
 	return &Application{
 		Config: cfg,
@@ -55,5 +57,6 @@ func NewApplication(
 		StatManager:        statManager,
 		TelegramBotManager: telegramBotManager,
 		UserAccountManager: userAccountManager,
+		S3Manager:          s3Manager,
 	}
 }
