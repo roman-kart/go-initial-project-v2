@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/telebot.v3"
 
-	c "github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
+	c "github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 // TelegramBot provides functionality for creating a [telebot.Bot].

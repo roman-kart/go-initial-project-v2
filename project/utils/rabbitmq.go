@@ -7,8 +7,8 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 // RabbitMQ manipulates RabbitMQ connections.

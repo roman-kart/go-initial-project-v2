@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
-	"github.com/roman-kart/go-initial-project/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
 // S3Manager is a struct for managing files in systems like S3.

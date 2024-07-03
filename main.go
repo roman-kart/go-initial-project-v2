@@ -10,10 +10,10 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/telebot.v3"
 
-	"github.com/roman-kart/go-initial-project/project"
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/managers"
-	"github.com/roman-kart/go-initial-project/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/managers"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 func main() {

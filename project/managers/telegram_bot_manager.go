@@ -9,9 +9,9 @@ import (
 	"gopkg.in/telebot.v3"
 	"gopkg.in/telebot.v3/middleware"
 
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
-	"github.com/roman-kart/go-initial-project/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
 // TelegramBotManager managing [utils.TelegramBot].

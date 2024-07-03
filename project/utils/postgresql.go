@@ -8,8 +8,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 // Postgresql manipulates connection to Postgresql database.

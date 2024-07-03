@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/roman-kart/go-initial-project/project/managers"
+	"github.com/roman-kart/go-initial-project/v2/project/managers"
 )
 
 func TestTelegramStartCommandErrorOnEmptyMessage(t *testing.T) {

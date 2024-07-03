@@ -1,4 +1,4 @@
-module github.com/roman-kart/go-initial-project
+module github.com/roman-kart/go-initial-project/v2
 
 go 1.22
 

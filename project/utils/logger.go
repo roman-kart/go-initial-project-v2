@@ -5,8 +5,8 @@ import (
 
 	"go.uber.org/zap"
 
-	cfg "github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/tools"
+	cfg "github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 // GetZapLogger returns a [zap.Logger].

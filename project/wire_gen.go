@@ -7,10 +7,10 @@
 package project
 
 import (
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/managers"
-	"github.com/roman-kart/go-initial-project/project/tools"
-	"github.com/roman-kart/go-initial-project/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/managers"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
 // Injectors from wire.go:

@@ -42,7 +42,7 @@ while (( "$#" )); do
       shift  1
       ;;
     *)
-      echo "Error: Invalid argument"
+      echo "Error: Invalid argument: '$1'"
       exit 1
   esac
 done
@@ -56,6 +56,7 @@ Usage: ./helper.sh lint (<argument>...)
 
 Arguments:
   --verbose - Enable verbose output
+  --fix     - Use automatic issue fixing
 EOF
     else
       arguments=""
@@ -119,7 +120,7 @@ Documentation for command: ./helper.sh <command> (--help|-h)
 Commands:
   lint   - Perform linting with golangci-lint
   godoc  - Start godoc server
-  gotest   - Run all GO-tests
+  gotest - Run all GO-tests
 EOF
     ;;
   gotest)
@@ -128,7 +129,7 @@ EOF
 Usage: ./helper.sh test
 
 Arguments:
-  --verbose  - Enable verbose output (default FALSE)
+  --verbose - Enable verbose output (default FALSE)
 EOF
     else
       args=""

@@ -3,9 +3,9 @@ package project
 import (
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/project/config"
-	"github.com/roman-kart/go-initial-project/project/managers"
-	"github.com/roman-kart/go-initial-project/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/project/config"
+	"github.com/roman-kart/go-initial-project/v2/project/managers"
+	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
 // Application contains all components of go-initial-project components.

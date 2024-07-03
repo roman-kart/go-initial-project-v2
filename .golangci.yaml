@@ -53,7 +53,7 @@ linters-settings:
           - github.com/google/uuid
           - github.com/stretchr/testify
           - go.uber.org/zap
-          - github.com/roman-kart/go-initial-project
+          - github.com/roman-kart/go-initial-project/v2
           - github.com/jinzhu/configor
           - gorm.io/driver/clickhouse
           - gorm.io/driver/postgres
