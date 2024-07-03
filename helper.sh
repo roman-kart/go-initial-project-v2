@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-GO_MODULE_URL="github.com/roman-kart/go-initial-project"
+GO_MODULE_URL="github.com/roman-kart/go-initial-project/v2"
 
 # Check if no arguments were passed
 # The number of arguments is stored in $#
