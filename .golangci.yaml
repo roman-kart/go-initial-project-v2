@@ -42,6 +42,7 @@ linters:
     # either pass an empty configuration object,
     # or eventually initialize some of the fields after
     - exhaustruct
+    - gci # Start doing strange autofixes after starting developing on branch v2
 
 linters-settings:
   depguard:
