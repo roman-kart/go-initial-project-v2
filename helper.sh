@@ -200,9 +200,10 @@ Usage: ./helper.sh (<command>|--help|-h)
 Documentation for command: ./helper.sh <command> (--help|-h)
 
 Commands:
-  lint   - Perform linting with golangci-lint
-  godoc  - Start godoc server
-  gotest - Run all GO-tests
+  lint               - Perform linting with golangci-lint
+  godoc              - Start godoc server
+  gotest             - Run all GO-tests
+  lint-check-autofix - Check which linters make changes with code
 EOF
     ;;
   gotest)

@@ -22,6 +22,9 @@ _autocomplete() {
     gotest)
       words="$helpArgs --verbose"
       ;;
+    lint-check-autofix)
+      words="$helpArgs"
+      ;;
     *)
       ;;
   esac
