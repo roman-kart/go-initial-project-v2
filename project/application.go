@@ -1,6 +1,7 @@
 package project
 
 import (
+	"github.com/roman-kart/go-initial-project/v2/project/environment"
 	"go.uber.org/zap"
 
 	"github.com/roman-kart/go-initial-project/v2/project/config"
@@ -24,6 +25,8 @@ type Application struct {
 	TelegramBotManager *managers.TelegramBotManager
 	UserAccountManager *managers.UserAccountManager
 	S3Manager          *managers.S3Manager
+
+	Initializer *environment.Initializer
 }
 
 // NewApplication creates a new instance of Application.
@@ -42,6 +45,8 @@ func NewApplication(
 	telegramBotManager *managers.TelegramBotManager,
 	userAccountManager *managers.UserAccountManager,
 	s3Manager *managers.S3Manager,
+
+	initializer *environment.Initializer,
 ) *Application {
 	return &Application{
 		Config: cfg,
@@ -58,5 +63,7 @@ func NewApplication(
 		TelegramBotManager: telegramBotManager,
 		UserAccountManager: userAccountManager,
 		S3Manager:          s3Manager,
+
+		Initializer: initializer,
 	}
 }

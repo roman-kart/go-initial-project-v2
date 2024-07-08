@@ -1,0 +1,6 @@
+# Local configurations
+main-local.yaml
+
+# Credentials
+aws/config
+aws/credentials
