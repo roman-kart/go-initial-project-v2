@@ -1,20 +1,17 @@
-package project
+package main
 
 import (
-	"go.uber.org/zap"
-
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/managers"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"go.uber.org/zap"
 )
 
 // Application contains all components of go-initial-project components.
 type Application struct {
-	Config *config.Config
+	Config *Config
 
 	ClickHouse  *utils.ClickHouse
-	Logger      *utils.Logger
-	logger      *zap.Logger
+	Logger      *zap.Logger
 	Postgres    *utils.Postgresql
 	RabbitMQ    *utils.RabbitMQ
 	S3          *utils.S3
@@ -29,10 +26,10 @@ type Application struct {
 // NewApplication creates a new instance of Application.
 // Using for configuring with wire.
 func NewApplication(
-	cfg *config.Config,
+	cfg *Config,
 
 	clickHouse *utils.ClickHouse,
-	logger *utils.Logger,
+	logger *zap.Logger,
 	postgres *utils.Postgresql,
 	rabbitmq *utils.RabbitMQ,
 	s3 *utils.S3,
@@ -47,8 +44,7 @@ func NewApplication(
 		Config: cfg,
 
 		ClickHouse:  clickHouse,
-		Logger:      logger,
-		logger:      logger.Logger.Named("Application"),
+		Logger:      logger.Named("Application"),
 		Postgres:    postgres,
 		RabbitMQ:    rabbitmq,
 		S3:          s3,

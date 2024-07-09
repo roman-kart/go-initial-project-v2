@@ -3,6 +3,8 @@ package tools
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
+	"github.com/jinzhu/configor"
 	"io"
 	"math/big"
 	"net/http"
@@ -11,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -177,4 +180,52 @@ func FirstNonEmpty[T comparable](values ...T) T {
 	}
 
 	return emptyValue
+}
+
+func CountdownCmd(ctx context.Context, message string, delay time.Duration, count uint) {
+	fmt.Println(message)
+	fmt.Printf("Countdown: %d\n", count)
+
+	ticker := time.NewTicker(delay)
+	defer ticker.Stop()
+
+	for i := count; i > 0; i-- {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			fmt.Printf("%d ", i)
+		}
+	}
+
+	fmt.Println("0")
+}
+
+func RedOutputCmd(message string) {
+	fmt.Println("\033[31m" + message + "\033[0m")
+}
+
+func LoadConfig(paths []string, obj interface{}) error {
+	configPaths := []string{}
+
+	for _, path := range paths {
+		if _, err := os.Stat(path); err != nil {
+			if os.IsNotExist(err) {
+				fmt.Printf("Config file not found: %s\n", path)
+			} else {
+				fmt.Printf("Skip file because an error occurred while checking the file: %s\n", path)
+			}
+			return err
+		} else {
+			configPaths = append(configPaths, path)
+		}
+	}
+
+	err := configor.Load(obj, configPaths...)
+	if err != nil {
+		err = fmt.Errorf("LoadConfig: %w", err)
+		return err
+	}
+
+	return nil
 }

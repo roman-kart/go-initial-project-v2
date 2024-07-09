@@ -1,19 +1,30 @@
 //go:build wireinject
 // +build wireinject
 
-package project
+package main
 
 import (
 	"github.com/google/wire"
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/managers"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
-func InitializeApplication(configFolder string) (*Application, func(), error) {
+func InitializeApplication(
+	configFolder string,
+	configCountdownSecondsCount uint,
+) (*Application, func(), error) {
 	wire.Build(
-		config.NewConfig,
+		NewConfig,
+
+		NewS3ManagerConfig,
+		NewTelegramBotManagerConfig,
+		NewClickHouseConfig,
+		NewLoggerConfig,
+		NewPostgresqlConfig,
+		NewRabbitMQConfig,
+		NewS3Config,
+		NewTelegramConfig,
 
 		tools.NewErrorWrapperCreator,
 		utils.NewClickHouse,

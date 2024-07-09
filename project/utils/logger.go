@@ -5,7 +5,6 @@ import (
 
 	"go.uber.org/zap"
 
-	cfg "github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
@@ -17,17 +16,19 @@ func GetZapLogger() *zap.Logger {
 	return l
 }
 
-// Logger is a Logger component of the application.
-type Logger struct {
-	Config *cfg.Config
-	Logger *zap.Logger
+type LoggerConfig struct {
+	Level    string
+	Sampling struct {
+		Initial    int
+		Thereafter int
+	}
 }
 
 // NewLogger returns a new Logger component.
-func NewLogger(config *cfg.Config) (*Logger, func(), error) {
+func NewLogger(config *LoggerConfig) (*zap.Logger, func(), error) {
 	logLevel := zap.InfoLevel
 
-	switch config.Logger.Level {
+	switch config.Level {
 	case "debug":
 		logLevel = zap.DebugLevel
 	case "info":
@@ -46,8 +47,8 @@ func NewLogger(config *cfg.Config) (*Logger, func(), error) {
 		Level:       zap.NewAtomicLevelAt(logLevel),
 		Development: false,
 		Sampling: &zap.SamplingConfig{
-			Initial:    config.Logger.Sampling.Initial,
-			Thereafter: config.Logger.Sampling.Thereafter,
+			Initial:    config.Sampling.Initial,
+			Thereafter: config.Sampling.Thereafter,
 		},
 		Encoding:         "json",
 		EncoderConfig:    zap.NewProductionEncoderConfig(),
@@ -56,7 +57,7 @@ func NewLogger(config *cfg.Config) (*Logger, func(), error) {
 	}.Build()
 
 	//nolint:forbidigo
-	return &Logger{Config: config, Logger: logger},
+	return logger,
 		func() { err := logger.Sync(); fmt.Println("Logger sync error:", err) },
 		ew(err)
 }

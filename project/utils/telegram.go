@@ -6,14 +6,18 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/telebot.v3"
 
-	c "github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
+type TelegramConfig struct {
+	LongPoller struct {
+		Timeout uint
+	}
+}
+
 // TelegramBot provides functionality for creating a [telebot.Bot].
 type TelegramBot struct {
-	Config              *c.Config
-	Logger              *Logger
+	Config              *TelegramConfig
 	RabbitMQ            *RabbitMQ
 	logger              *zap.Logger
 	ErrorWrapperCreator tools.ErrorWrapperCreator
@@ -21,16 +25,13 @@ type TelegramBot struct {
 
 // NewTelegram creates a new [TelegramBot].
 func NewTelegram(
-	config *c.Config,
-	logger *Logger,
-	rabbitMQ *RabbitMQ,
+	config *TelegramConfig,
+	logger *zap.Logger,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 ) *TelegramBot {
 	return &TelegramBot{
 		Config:              config,
-		Logger:              logger,
-		RabbitMQ:            rabbitMQ,
-		logger:              logger.Logger.Named("TelegramBot"),
+		logger:              logger.Named("TelegramBot"),
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("Telegram"),
 	}
 }
@@ -43,7 +44,7 @@ func (t *TelegramBot) CreateBot(token string) (*telebot.Bot, error) {
 	settings := telebot.Settings{
 		Token: token,
 		Poller: &telebot.LongPoller{
-			Timeout: time.Duration(t.Config.Telegram.LongPoller.Timeout) * time.Second,
+			Timeout: time.Duration(t.Config.LongPoller.Timeout) * time.Second,
 		},
 	}
 
@@ -54,9 +55,4 @@ func (t *TelegramBot) CreateBot(token string) (*telebot.Bot, error) {
 	}
 
 	return bot, nil
-}
-
-// CreateBotDefault creates a new [telebot.Bot] with default token.
-func (t *TelegramBot) CreateBotDefault() (*telebot.Bot, error) {
-	return t.CreateBot(t.Config.Telegram.Token)
 }

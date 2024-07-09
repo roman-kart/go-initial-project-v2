@@ -5,15 +5,12 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
 // StatManager do CRUD operations with statistics.
 type StatManager struct {
-	Config              *config.Config
-	Logger              *utils.Logger
 	logger              *zap.Logger
 	ClickHouse          *utils.ClickHouse
 	ErrorWrapperCreator tools.ErrorWrapperCreator
@@ -22,15 +19,12 @@ type StatManager struct {
 // NewStatManager create new StatManager instance.
 // Using for configuring with wire.
 func NewStatManager(
-	logger *utils.Logger,
+	logger *zap.Logger,
 	clickHouse *utils.ClickHouse,
-	config *config.Config,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 ) (*StatManager, error) {
 	sm := &StatManager{
-		Config:              config,
-		Logger:              logger,
-		logger:              logger.Logger.Named("StatManager"),
+		logger:              logger.Named("StatManager"),
 		ClickHouse:          clickHouse,
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("StatManager"),
 	}

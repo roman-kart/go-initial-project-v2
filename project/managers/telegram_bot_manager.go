@@ -9,15 +9,21 @@ import (
 	"gopkg.in/telebot.v3"
 	"gopkg.in/telebot.v3/middleware"
 
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
+type TelegramBotManagerConfig struct {
+	Token      string
+	Admins     []int64
+	LongPoller struct {
+		Timeout uint
+	}
+}
+
 // TelegramBotManager managing [utils.TelegramBot].
 type TelegramBotManager struct {
-	Config              *config.Config
-	Logger              *utils.Logger
+	Config              *TelegramBotManagerConfig
 	logger              *zap.Logger
 	TelegramBot         *utils.TelegramBot
 	telegramBot         *telebot.Bot
@@ -29,8 +35,8 @@ type TelegramBotManager struct {
 // NewTelegramBotManager creates new TelegramBotManager.
 // Using for configuring with wire.
 func NewTelegramBotManager(
-	config *config.Config,
-	logger *utils.Logger,
+	config *TelegramBotManagerConfig,
+	logger *zap.Logger,
 	statManager *StatManager,
 	userAccountManager *UserAccountManager,
 	telegramBot *utils.TelegramBot,
@@ -38,8 +44,7 @@ func NewTelegramBotManager(
 ) (*TelegramBotManager, func(), error) {
 	tbm := &TelegramBotManager{
 		Config:              config,
-		Logger:              logger,
-		logger:              logger.Logger.Named("TelegramBotManager"),
+		logger:              logger.Named("TelegramBotManager"),
 		TelegramBot:         telegramBot,
 		StatManager:         statManager,
 		UserAccountManager:  userAccountManager,
@@ -61,7 +66,7 @@ func NewTelegramBotManager(
 func (t *TelegramBotManager) createBot() error {
 	ew := t.ErrorWrapperCreator.GetMethodWrapper("createBot")
 
-	bot, err := t.TelegramBot.CreateBotDefault()
+	bot, err := t.TelegramBot.CreateBot(t.Config.Token)
 	if err != nil {
 		return ew(err)
 	}
@@ -205,5 +210,5 @@ func TelegramHelpCommandResponse(cfg *HelpCommandConfig, args []string) (string,
 
 // GetAdminOnlyMiddleware returns middleware that checks if user is in admins.
 func (t *TelegramBotManager) GetAdminOnlyMiddleware() telebot.MiddlewareFunc {
-	return middleware.Whitelist(t.Config.Telegram.Admins...)
+	return middleware.Whitelist(t.Config.Admins...)
 }

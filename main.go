@@ -4,24 +4,21 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/roman-kart/go-initial-project/v2/project/managers"
+	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"gopkg.in/telebot.v3"
 	"os"
 	"strings"
 
 	"go.uber.org/zap"
-	"gopkg.in/telebot.v3"
-
-	"github.com/roman-kart/go-initial-project/v2/project"
-	"github.com/roman-kart/go-initial-project/v2/project/config"
-	"github.com/roman-kart/go-initial-project/v2/project/managers"
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
 func main() {
 	test()
 }
 
-func configureApp(app *project.Application) error {
-	app.Logger.Logger.Info("Starting application")
+func configureApp(app *Application) error {
+	app.Logger.Info("Starting application")
 
 	helpAdditionalMessage := "Чтобы получить справку по конкретной команде: `/help <команда без слэша>`"
 	app.TelegramBotManager.AddCommonCommandsHandlers(&managers.CommonBotCommandsConfig{
@@ -54,7 +51,7 @@ func configureApp(app *project.Application) error {
 	return err
 }
 
-func configureBot(app *project.Application) error {
+func configureBot(app *Application) error {
 	botManager := app.TelegramBotManager
 	bot := botManager.GetBot()
 	adminsOnlyGroup := bot.Group()
@@ -101,11 +98,9 @@ func configureBot(app *project.Application) error {
 }
 
 func test() {
-	config.CountdownSecondsCount = 1
-
 	rootPath := tools.GetRootPath()
-	configFolder := rootPath + string(os.PathSeparator) + "project" + string(os.PathSeparator) + "config"
-	app, cleanup, err := project.InitializeApplication(configFolder)
+	configFolder := rootPath + string(os.PathSeparator) + "config"
+	app, cleanup, err := InitializeApplication(configFolder, 1)
 
 	defer cleanup()
 
@@ -114,7 +109,7 @@ func test() {
 	err = configureApp(app)
 	tools.PanicOnError(err)
 
-	readInput(app.Logger.Logger)
+	readInput(app.Logger)
 }
 
 func readInput(logger *zap.Logger) {

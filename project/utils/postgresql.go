@@ -8,15 +8,29 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
+type PostgresqlConfig struct {
+	Host               string
+	Port               int
+	User               string
+	Password           string
+	Database           string
+	IsNeedToRecreate   bool
+	AutoMigrate        bool
+	IsNeedToInitialize bool
+	ConnMaxLifetime    int64
+	ConnMaxIdleTime    int64
+	MaxIdleConns       int
+	MaxOpenConns       int
+	IsDebug            bool
+}
+
 // Postgresql manipulates connection to Postgresql database.
 type Postgresql struct {
-	Config              *config.Config
+	Config              *PostgresqlConfig
 	logger              *zap.Logger
-	Logger              *Logger
 	db                  *gorm.DB
 	ErrorWrapperCreator tools.ErrorWrapperCreator
 }
@@ -24,14 +38,13 @@ type Postgresql struct {
 // NewPostgresql creates new instance of [Postgresql].
 // Using for configuring with wire.
 func NewPostgresql(
-	config *config.Config,
-	logger *Logger,
+	config *PostgresqlConfig,
+	logger *zap.Logger,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 ) (*Postgresql, func(), error) {
 	p := &Postgresql{
 		Config:              config,
-		logger:              logger.Logger.Named("Postgresql"),
-		Logger:              logger,
+		logger:              logger.Named("Postgresql"),
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("Postgresql"),
 	}
 
@@ -58,11 +71,11 @@ func NewPostgresql(
 // GetConnectionString returns formated connection string.
 func (p *Postgresql) GetConnectionString() string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
-		p.Config.Postgresql.Host,
-		p.Config.Postgresql.User,
-		p.Config.Postgresql.Password,
-		p.Config.Postgresql.Database,
-		p.Config.Postgresql.Port,
+		p.Config.Host,
+		p.Config.User,
+		p.Config.Password,
+		p.Config.Database,
+		p.Config.Port,
 	)
 }
 
@@ -96,10 +109,10 @@ func (p *Postgresql) GetConnection() (*gorm.DB, error) {
 		return nil, ew(err)
 	}
 
-	dbInner.SetConnMaxLifetime(time.Second * time.Duration(p.Config.Postgresql.ConnMaxLifetime))
-	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(p.Config.Postgresql.ConnMaxIdleTime))
-	dbInner.SetMaxIdleConns(p.Config.Postgresql.MaxIdleConns)
-	dbInner.SetMaxOpenConns(p.Config.Postgresql.MaxOpenConns)
+	dbInner.SetConnMaxLifetime(time.Second * time.Duration(p.Config.ConnMaxLifetime))
+	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(p.Config.ConnMaxIdleTime))
+	dbInner.SetMaxIdleConns(p.Config.MaxIdleConns)
+	dbInner.SetMaxOpenConns(p.Config.MaxOpenConns)
 
 	p.db = db
 
@@ -112,7 +125,7 @@ func (p *Postgresql) Migrate(models []interface{}) error {
 	ew := p.ErrorWrapperCreator.GetMethodWrapper("Migrate")
 	logger := p.logger.Named("Migrate")
 
-	if !p.Config.Postgresql.AutoMigrate {
+	if !p.Config.AutoMigrate {
 		logger.Info("AutoMigrate is disabled")
 		return nil
 	}
@@ -124,7 +137,7 @@ func (p *Postgresql) Migrate(models []interface{}) error {
 	}
 
 	for _, model := range models {
-		if p.Config.Postgresql.IsNeedToRecreate {
+		if p.Config.IsNeedToRecreate {
 			err := db.Migrator().DropTable(model)
 			if err != nil {
 				logger.Error("Failed to drop table", zap.Error(err))

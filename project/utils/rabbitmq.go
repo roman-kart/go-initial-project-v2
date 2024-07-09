@@ -2,32 +2,39 @@ package utils
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"net"
 	"strconv"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
+type RabbitMQConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
 // RabbitMQ manipulates RabbitMQ connections.
 type RabbitMQ struct {
-	Config              *config.Config
-	Logger              *Logger
+	Config              *RabbitMQConfig
 	ErrorWrapperCreator tools.ErrorWrapperCreator
+	logger              *zap.Logger
 }
 
 // NewRabbitMQ creates a new instance of RabbitMQ.
 // Using for configuring with wire.
 func NewRabbitMQ(
-	config *config.Config,
-	logger *Logger,
+	config *RabbitMQConfig,
+	logger *zap.Logger,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 ) *RabbitMQ {
 	return &RabbitMQ{
 		Config:              config,
-		Logger:              logger,
+		logger:              logger.Named("RabbitMQ"),
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("RabbitMQ"),
 	}
 }
@@ -35,14 +42,14 @@ func NewRabbitMQ(
 // GetConnectionString returns formated connection string.
 func (r *RabbitMQ) GetConnectionString(vhost string) string {
 	hostAndPort := net.JoinHostPort(
-		r.Config.RabbitMQ.Host,
-		strconv.Itoa(r.Config.RabbitMQ.Port),
+		r.Config.Host,
+		strconv.Itoa(r.Config.Port),
 	)
 
 	return fmt.Sprintf(
 		"amqp://%s:%s@%s/%s",
-		r.Config.RabbitMQ.User,
-		r.Config.RabbitMQ.Password,
+		r.Config.User,
+		r.Config.Password,
 		hostAndPort,
 		vhost,
 	)

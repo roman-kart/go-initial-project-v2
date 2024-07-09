@@ -8,15 +8,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
 )
 
+type S3ManagerConfig struct {
+	Bucket  string
+	MaxKeys int32
+	Timeout uint
+}
+
 // S3Manager is a struct for managing files in systems like S3.
 type S3Manager struct {
-	Config              *config.Config
-	Logger              *utils.Logger
+	Config              *S3ManagerConfig
 	logger              *zap.Logger
 	ErrorWrapperCreator tools.ErrorWrapperCreator
 	S3Client            *utils.S3
@@ -25,15 +29,14 @@ type S3Manager struct {
 // NewS3Manager creates a new instance of S3Manager.
 // Using for configuring with wire.
 func NewS3Manager(
-	config *config.Config,
-	logger *utils.Logger,
+	config *S3ManagerConfig,
+	logger *zap.Logger,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 	s3Client *utils.S3,
 ) (*S3Manager, error) {
 	s3Manager := &S3Manager{
 		Config:              config,
-		Logger:              logger,
-		logger:              logger.Logger.Named("S3Manager"),
+		logger:              logger.Named("S3Manager"),
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("S3Manager"),
 		S3Client:            s3Client,
 	}
@@ -47,7 +50,7 @@ func NewS3Manager(
 
 	ctx, cancel := context.WithTimeout(
 		context.Background(),
-		time.Duration(s3Manager.Config.S3Manager.Timeout)*time.Second,
+		time.Duration(s3Manager.Config.Timeout)*time.Second,
 	)
 	defer cancel()
 
@@ -92,13 +95,13 @@ func (s3Manager *S3Manager) ListObjects(input ListObjectsInput) ([]types.Object,
 
 	var continuationToken *string
 
-	bucket := tools.FirstNonEmpty(input.Bucket, s3Manager.Config.S3Manager.Bucket)
-	maxKeys := tools.FirstNonEmpty(input.MaxKeys, s3Manager.Config.S3Manager.MaxKeys)
+	bucket := tools.FirstNonEmpty(input.Bucket, s3Manager.Config.Bucket)
+	maxKeys := tools.FirstNonEmpty(input.MaxKeys, s3Manager.Config.MaxKeys)
 
 	for {
 		ctx, cancel := context.WithTimeout(
 			context.Background(),
-			time.Duration(s3Manager.Config.S3Manager.Timeout)*time.Second,
+			time.Duration(s3Manager.Config.Timeout)*time.Second,
 		)
 		defer cancel()
 

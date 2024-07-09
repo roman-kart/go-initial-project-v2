@@ -14,15 +14,29 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 
-	cfg "github.com/roman-kart/go-initial-project/v2/project/config"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 )
 
+type ClickHouseConfig struct {
+	Host               string
+	Port               int
+	User               string
+	Password           string
+	Database           string
+	IsNeedToRecreate   bool
+	AutoMigrate        bool
+	IsNeedToInitialize bool
+	ConnMaxLifetime    int64
+	ConnMaxIdleTime    int64
+	MaxIdleConns       int
+	MaxOpenConns       int
+	IsDebug            bool
+}
+
 // ClickHouse manipulates connection to ClickHouse database.
 type ClickHouse struct {
-	Config              *cfg.Config
+	Config              *ClickHouseConfig
 	logger              *zap.Logger
-	Logger              *Logger
 	db                  *gorm.DB
 	ErrorWrapperCreator tools.ErrorWrapperCreator
 }
@@ -30,14 +44,13 @@ type ClickHouse struct {
 // NewClickHouse creates new instance of [ClickHouse].
 // Using for configuring with wire.
 func NewClickHouse(
-	config *cfg.Config,
-	logger *Logger,
+	config *ClickHouseConfig,
+	logger *zap.Logger,
 	errorWrapperCreator tools.ErrorWrapperCreator,
 ) (*ClickHouse, func(), error) {
 	c := &ClickHouse{
 		Config:              config,
-		logger:              logger.Logger.Named("ClickHouse"),
-		Logger:              logger,
+		logger:              logger.Named("ClickHouse"),
 		ErrorWrapperCreator: errorWrapperCreator.AppendToPrefix("ClickHouse"),
 	}
 
@@ -64,14 +77,14 @@ func NewClickHouse(
 // GetConnectionString returns formated connection string.
 func (c *ClickHouse) GetConnectionString() string {
 	hostAndPort := net.JoinHostPort(
-		c.Config.Clickhouse.Host,
-		strconv.Itoa(c.Config.Clickhouse.Port),
+		c.Config.Host,
+		strconv.Itoa(c.Config.Port),
 	)
 
 	return fmt.Sprintf("tcp://%s/%s?username=%s",
 		hostAndPort,
-		c.Config.Clickhouse.Database,
-		c.Config.Clickhouse.User,
+		c.Config.Database,
+		c.Config.User,
 	)
 }
 
@@ -105,10 +118,10 @@ func (c *ClickHouse) GetConnection() (*gorm.DB, error) {
 		return nil, ew(err)
 	}
 
-	dbInner.SetConnMaxLifetime(time.Second * time.Duration(c.Config.Clickhouse.ConnMaxLifetime))
-	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(c.Config.Clickhouse.ConnMaxIdleTime))
-	dbInner.SetMaxIdleConns(c.Config.Clickhouse.MaxIdleConns)
-	dbInner.SetMaxOpenConns(c.Config.Clickhouse.MaxOpenConns)
+	dbInner.SetConnMaxLifetime(time.Second * time.Duration(c.Config.ConnMaxLifetime))
+	dbInner.SetConnMaxIdleTime(time.Second * time.Duration(c.Config.ConnMaxIdleTime))
+	dbInner.SetMaxIdleConns(c.Config.MaxIdleConns)
+	dbInner.SetMaxOpenConns(c.Config.MaxOpenConns)
 
 	c.db = db
 
@@ -121,7 +134,7 @@ func (c *ClickHouse) Migrate(models []interface{}) error {
 	ew := c.ErrorWrapperCreator.GetMethodWrapper("Migrate")
 	logger := c.logger.Named("Migrate")
 
-	if !c.Config.Clickhouse.AutoMigrate {
+	if !c.Config.AutoMigrate {
 		logger.Info("AutoMigrate is disabled")
 		return nil
 	}
@@ -156,7 +169,7 @@ func (c *ClickHouse) Migrate(models []interface{}) error {
 	for _, entity := range tableMigrateEntitiesCh {
 		logger.Info("Migrate", zap.String("model", reflect.TypeOf(entity.Model).String()))
 
-		if c.Config.Clickhouse.IsNeedToRecreate {
+		if c.Config.IsNeedToRecreate {
 			logger.Info("Model is need to recreate", zap.String("model", reflect.TypeOf(entity.Model).String()))
 
 			err := db.Migrator().DropTable(entity.Model)
