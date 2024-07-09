@@ -8,7 +8,6 @@ package project
 
 import (
 	"github.com/roman-kart/go-initial-project/v2/project/config"
-	"github.com/roman-kart/go-initial-project/v2/project/environment"
 	"github.com/roman-kart/go-initial-project/v2/project/managers"
 	"github.com/roman-kart/go-initial-project/v2/project/tools"
 	"github.com/roman-kart/go-initial-project/v2/project/utils"
@@ -69,8 +68,7 @@ func InitializeApplication(configFolder string) (*Application, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	initializer := environment.NewInitializer(logger, errorWrapperCreator)
-	application := NewApplication(configConfig, clickHouse, logger, postgresql, rabbitMQ, s3, telegramBot, statManager, telegramBotManager, userAccountManager, s3Manager, initializer)
+	application := NewApplication(configConfig, clickHouse, logger, postgresql, rabbitMQ, s3, telegramBot, statManager, telegramBotManager, userAccountManager, s3Manager)
 	return application, func() {
 		cleanup4()
 		cleanup3()
