@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/roman-kart/go-initial-project/v2/project/managers"
-	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/components/managers"
+	"github.com/roman-kart/go-initial-project/v2/components/utils"
 	"go.uber.org/zap"
 )
 

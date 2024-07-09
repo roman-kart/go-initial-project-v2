@@ -8,7 +8,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
 )
 
 type PostgresqlConfig struct {

@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/telebot.v3"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
 )
 
 type TelegramConfig struct {

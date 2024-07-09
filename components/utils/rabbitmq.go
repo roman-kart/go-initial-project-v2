@@ -8,7 +8,7 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
 )
 
 type RabbitMQConfig struct {

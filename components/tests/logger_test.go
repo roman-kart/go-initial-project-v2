@@ -3,7 +3,7 @@ package tests_test
 import (
 	"testing"
 
-	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/components/utils"
 )
 
 func TestGetZapLoggerMustNotPanic(t *testing.T) {

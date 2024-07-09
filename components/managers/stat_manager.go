@@ -5,8 +5,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
-	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/utils"
 )
 
 // StatManager do CRUD operations with statistics.

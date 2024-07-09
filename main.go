@@ -4,8 +4,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/roman-kart/go-initial-project/v2/project/managers"
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/managers"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
 	"gopkg.in/telebot.v3"
 	"os"
 	"strings"

@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
 )
 
 type S3Config struct {

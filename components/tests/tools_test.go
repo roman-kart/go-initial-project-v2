@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
-	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/utils"
 )
 
 var errTest = errors.New("test error")

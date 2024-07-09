@@ -5,4 +5,4 @@
 //   - Tools - low-level tools (printers, error wrappers, etc),
 //   - Utils  - components for working with low-level utilities (database, file management, etc),
 //   - Managers   - components for working with high-level.
-package project
+package components

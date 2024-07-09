@@ -9,8 +9,8 @@ import (
 	"gopkg.in/telebot.v3"
 	"gopkg.in/telebot.v3/middleware"
 
-	"github.com/roman-kart/go-initial-project/v2/project/tools"
-	"github.com/roman-kart/go-initial-project/v2/project/utils"
+	"github.com/roman-kart/go-initial-project/v2/components/tools"
+	"github.com/roman-kart/go-initial-project/v2/components/utils"
 )
 
 type TelegramBotManagerConfig struct {
