@@ -25,7 +25,13 @@
   "max_idle_conns": 10
   "max_open_conns": 10
 "logger":
-  "level": "info"
+  "console":
+    "is_enabled": true
+  "file":
+    "is_enabled": true
+    "path": "tmp/log/app.log"
+    "rotation":
+      "is_enabled": true
 "is_debug": false
 "telegram":
   "token": ""

@@ -28,10 +28,22 @@ type Config struct {
 		MaxOpenConns       int    `default:"10"        yaml:"max_open_conns"`
 	} `yaml:"clickhouse"`
 	Logger struct {
-		Level    string `default:"info" yaml:"level"`
-		Sampling struct {
-			Initial    int `default:"100" yaml:"initial"`
-			Thereafter int `default:"200" yaml:"thereafter"`
+		Console struct {
+			IsEnabled bool   `default:"false" yaml:"is_enabled"`
+			Level     string `default:"info"  yaml:"level"`
+		}
+		File struct {
+			IsEnabled bool   `default:"false"           yaml:"is_enabled"`
+			Level     string `default:"info"            yaml:"level"`
+			Path      string `default:"tmp/log/app.log" yaml:"path"`
+			Rotation  struct {
+				IsEnabled  bool `default:"false" yaml:"is_enabled"`
+				MaxSize    int  `default:"100"   yaml:"max_size"`
+				MaxBackups int  `default:"10"    yaml:"max_backups"`
+				MaxAge     int  `default:"30"    yaml:"max_age"`
+				LocalTime  bool `default:"false" yaml:"local_time"`
+				Compress   bool `default:"false" yaml:"compress"`
+			}
 		}
 	}
 	Postgresql struct {
@@ -161,15 +173,34 @@ func NewClickHouseConfig(config *Config) *utils.ClickHouseConfig {
 }
 
 func NewLoggerConfig(config *Config) *utils.LoggerConfig {
+	var loggerConsoleConfig *utils.LoggerConsoleConfig
+	if config.Logger.Console.IsEnabled {
+		loggerConsoleConfig = &utils.LoggerConsoleConfig{
+			Level: config.Logger.Console.Level,
+		}
+	}
+
+	var loggerFileConfig *utils.LoggerFileConfig
+	if config.Logger.File.IsEnabled {
+		loggerFileConfig = &utils.LoggerFileConfig{
+			Level: config.Logger.File.Level,
+			Path:  tools.GetPathFromRoot(config.Logger.File.Path),
+		}
+
+		if config.Logger.File.Rotation.IsEnabled {
+			loggerFileConfig.Rotation = &utils.LoggerRotationConfig{
+				MaxSize:    config.Logger.File.Rotation.MaxSize,
+				MaxAge:     config.Logger.File.Rotation.MaxAge,
+				MaxBackups: config.Logger.File.Rotation.MaxBackups,
+				Localtime:  config.Logger.File.Rotation.LocalTime,
+				Compress:   config.Logger.File.Rotation.Compress,
+			}
+		}
+	}
+
 	return &utils.LoggerConfig{
-		Level: config.Logger.Level,
-		Sampling: struct {
-			Initial    int
-			Thereafter int
-		}{
-			Initial:    config.Logger.Sampling.Initial,
-			Thereafter: config.Logger.Sampling.Thereafter,
-		},
+		Console: loggerConsoleConfig,
+		File:    loggerFileConfig,
 	}
 }
 
